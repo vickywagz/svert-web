@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getStorefront } from '../services/api';
-import { useCart } from '../context/useCart';
-import type { Merchant, Product } from '../types';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getStorefront } from "../services/api";
+import { useCart } from "../context/useCart";
+import type { Merchant, Product } from "../types";
 
 export default function StorefrontPage() {
   const { username } = useParams<{ username: string }>();
@@ -63,8 +63,18 @@ export default function StorefrontPage() {
             </h1>
           </div>
           <button className="p-2 text-text-secondary hover:text-primary transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </button>
         </div>
@@ -94,7 +104,7 @@ export default function StorefrontPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3">
-            {merchant.products.map(product => (
+            {merchant.products.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
@@ -110,7 +120,11 @@ export default function StorefrontPage() {
         <div className="fixed bottom-0 left-0 right-0 p-4 z-20">
           <div className="max-w-lg mx-auto">
             <button
-              onClick={() => navigate(`/m/${username}/checkout`)}
+              onClick={() =>
+                navigate(`/m/${username}/checkout`, {
+                  state: { merchantId: merchant.id },
+                })
+              }
               className="w-full bg-primary text-white rounded-2xl py-4 flex items-center justify-between px-6 shadow-lg hover:bg-primary-light transition-colors"
             >
               <span className="bg-white text-primary text-sm font-bold rounded-full w-7 h-7 flex items-center justify-center">
@@ -119,8 +133,18 @@ export default function StorefrontPage() {
               <span className="font-semibold text-base">ITEMS</span>
               <div className="flex items-center gap-1">
                 <span className="font-semibold">CONTINUE</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </div>
             </button>
@@ -131,8 +155,7 @@ export default function StorefrontPage() {
       {/* Powered by footer */}
       <div className="text-center py-6">
         <p className="text-text-secondary text-xs">
-          Powered by{' '}
-          <span className="text-primary font-semibold">Svert</span>
+          Powered by <span className="text-primary font-semibold">Svert</span>
         </p>
       </div>
     </div>
@@ -166,8 +189,18 @@ function ProductCard({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <svg
+              className="w-12 h-12 text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
             </svg>
           </div>
         )}
@@ -186,17 +219,37 @@ function ProductCard({
             onClick={handleAdd}
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
               added
-                ? 'bg-success scale-90'
-                : 'bg-primary hover:bg-primary-light'
+                ? "bg-success scale-90"
+                : "bg-primary hover:bg-primary-light"
             }`}
           >
             {added ? (
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="w-4 h-4 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             ) : (
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-16H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              <svg
+                className="w-4 h-4 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 3h2l.4 2M7 13h10l4-16H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                />
               </svg>
             )}
           </button>

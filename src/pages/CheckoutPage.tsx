@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation  } from "react-router-dom";
 import { useCart } from "../context/useCart";
+
 import {
   sendOtp,
   verifyOtp,
@@ -27,6 +28,9 @@ export default function CheckoutPage() {
   const [error, setError] = useState("");
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const location = useLocation();
+const merchantId = (location.state as { merchantId: string })?.merchantId;
 
   // redirect if cart is empty
   useEffect(() => {
@@ -126,6 +130,7 @@ export default function CheckoutPage() {
         customerEmail,
         customerAddress,
         otpVerified: true,
+         merchantId,
         items: items.map((i) => ({
           productId: i.product.id,
           quantity: i.quantity,
