@@ -5,6 +5,7 @@ import { useCart } from "../context/useCart";
 import type { Merchant, Product } from "../types";
 
 export default function StorefrontPage() {
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const { addToCart, totalItems, items, totalAmount, updateQuantity, removeFromCart } = useCart();
@@ -49,9 +50,23 @@ export default function StorefrontPage() {
     );
   }
 
-  const filteredProducts = merchant.products.filter(p =>
-    p.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // get unique categories from products
+  const categories = [
+    'All',
+    ...new Set(
+      merchant.products
+        .filter(p => p.category !== null)
+        .map(p => p.category!.name)
+    ),
+  ];
+
+  // filter by both search and category
+  const filteredProducts = merchant.products.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory =
+      selectedCategory === 'All' || p.category?.name === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -69,7 +84,7 @@ export default function StorefrontPage() {
             </h1>
           </div>
         </div>
-        {/* Search bar in header */}
+        {/* Search bar */}
         <div className="max-w-lg mx-auto px-4 pb-3">
           <input
             type="text"
@@ -79,6 +94,26 @@ export default function StorefrontPage() {
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary bg-gray-50"
           />
         </div>
+        {/* Category filter tabs */}
+        {categories.length > 1 && (
+          <div className="max-w-lg mx-auto px-4 pb-3 overflow-x-auto">
+            <div className="flex gap-2 w-max">
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                    selectedCategory === cat
+                      ? 'bg-primary text-white'
+                      : 'bg-white text-text-secondary border border-gray-200'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="max-w-lg mx-auto px-4">
@@ -107,10 +142,10 @@ export default function StorefrontPage() {
           <div className="text-center py-16">
             <div className="text-5xl mb-4">🔍</div>
             <h3 className="text-lg font-semibold text-text-primary mb-2">
-              No results for "{search}"
+              No results found
             </h3>
             <p className="text-text-secondary text-sm">
-              Try searching for something else.
+              Try a different search or category.
             </p>
           </div>
         ) : (
@@ -146,16 +181,23 @@ export default function StorefrontPage() {
                 <div key={item.product.id} className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden shrink-0">
                     {item.product.photoUrl ? (
-                      <img src={item.product.photoUrl} alt={item.product.name} className="w-full h-full object-cover" />
+                      <img
+                        src={item.product.photoUrl}
+                        alt={item.product.name}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <div className="w-full h-full bg-gray-200" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-text-primary truncate">{item.product.name}</p>
-                    <p className="text-xs text-primary">₦{Number(item.product.price).toLocaleString()}</p>
+                    <p className="text-sm font-semibold text-text-primary truncate">
+                      {item.product.name}
+                    </p>
+                    <p className="text-xs text-primary">
+                      ₦{Number(item.product.price).toLocaleString()}
+                    </p>
                   </div>
-                  {/* Quantity controls */}
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
@@ -163,7 +205,9 @@ export default function StorefrontPage() {
                     >
                       −
                     </button>
-                    <span className="text-sm font-semibold w-4 text-center">{item.quantity}</span>
+                    <span className="text-sm font-semibold w-4 text-center">
+                      {item.quantity}
+                    </span>
                     <button
                       onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                       className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm"
@@ -184,7 +228,9 @@ export default function StorefrontPage() {
             </div>
             <div className="border-t border-gray-100 mt-3 pt-3 flex justify-between">
               <span className="text-sm text-text-secondary">Total</span>
-              <span className="text-sm font-bold text-primary">₦{totalAmount.toLocaleString()}</span>
+              <span className="text-sm font-bold text-primary">
+                ₦{totalAmount.toLocaleString()}
+              </span>
             </div>
           </div>
         </div>
@@ -223,7 +269,8 @@ export default function StorefrontPage() {
       {/* Powered by footer */}
       <div className="text-center py-6">
         <p className="text-text-secondary text-xs">
-          Powered by <span className="text-primary font-semibold">Svert</span>
+          Powered by{' '}
+          <span className="text-primary font-semibold">Svert</span>
         </p>
       </div>
     </div>
@@ -261,11 +308,25 @@ function ProductCard({
             </svg>
           </div>
         )}
+        {/* Category badge on image */}
+        {product.category && (
+          <div className="absolute top-2 left-2">
+            <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full font-medium">
+              {product.category.name}
+            </span>
+          </div>
+        )}
       </div>
       <div className="p-3">
         <h3 className="font-semibold text-text-primary text-sm leading-tight mb-1">
           {product.name}
         </h3>
+        {/* Description */}
+        {product.description && (
+          <p className="text-text-secondary text-xs mb-2 line-clamp-2">
+            {product.description}
+          </p>
+        )}
         <div className="flex items-center justify-between mt-2">
           <span className="text-primary font-bold text-sm">
             ₦{Number(product.price).toLocaleString()}
